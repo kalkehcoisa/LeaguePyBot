@@ -7,10 +7,10 @@ logger = get_logger()
 
 async def main():
     client = LeagueClient()
+    # await client.login(username="***REMOVED***", password="***REMOVED***")
     await client.set_pickban_and_role(
         pick="Fiora", ban="Shaco", first="TOP", second="MIDDLE"
     )
-
     # await client.log_everything()
 
     # await client.create_custom_game()
