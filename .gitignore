@@ -3,11 +3,18 @@ superannotation
 account_league.py
 negative
 positive
-__pycache__
 logs
 .DS_Store
 .coverage
 .vscode
-.pytest_cache
 leaguepybotv2.0
 .hypothesis
+
+# python
+*.py[co]
+__pycache__
+.pytest_cache
+venv/
+
+# windows
+*.bat

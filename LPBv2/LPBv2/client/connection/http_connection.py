@@ -1,5 +1,8 @@
-from .connection import Connection
+from threading import Lock
+
 from aiohttp import ClientSession, BasicAuth
+
+from .connection import Connection
 from json import dumps
 from ...common import ClientResponse, debug_coro
 from ...logger import get_logger
@@ -9,18 +12,20 @@ logger = get_logger("LPBv2.HTTPConnection")
 
 class HTTPConnection(Connection):
     __instance = None
+    _lock: Lock = Lock()
 
-    @staticmethod
-    def get_instance():
-        if HTTPConnection.__instance is None:
-            HTTPConnection()
-        return HTTPConnection.__instance
+    def __call__(cls, *args, **kwargs):
+        """
+        Possible changes to the value of the `__init__` argument do not affect
+        the returned instance.
+        """
+        with cls._lock:
+            if cls.__instance is None:
+                instance = super().__call__(*args, **kwargs)
+                cls.__instance = instance
+        return cls.__instance
 
     def __init__(self):
-        if HTTPConnection.__instance is not None:
-            raise Exception("This class is a Singleton")
-        else:
-            HTTPConnection.__instance = self
         super().__init__()
 
     @debug_coro

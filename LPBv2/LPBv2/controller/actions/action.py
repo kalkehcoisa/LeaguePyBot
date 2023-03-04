@@ -8,8 +8,8 @@ class Action:
         *args,
         **kwargs
     ):
-        self.mouse = Mouse.get_instance()
-        self.keyboard =Keyboard.get_instance(sleep=0.1)
+        self.mouse = Mouse()
+        self.keyboard =Keyboard(sleep=0.1)
         self.hotkeys = kwargs.get("hotkeys")
         self.game = kwargs.get("game")
 

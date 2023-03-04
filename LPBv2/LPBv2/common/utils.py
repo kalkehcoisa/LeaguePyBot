@@ -1,11 +1,13 @@
+from re import sub
 import base64
+import functools
+import os
+import time
+
 from distutils.util import strtobool
 from math import sqrt
-import time
 from ..logger import Colors, get_logger
 from .zones import ZONES_210 as ZONES
-from re import sub
-import os
 
 logger = get_logger("LPBv2.Utils")
 
@@ -87,10 +89,11 @@ def measure_time(func):
 
 
 def debug_coro(func):
+    @functools.wraps(func)
     async def add_exception(*args, **kwargs):
+        logger.debug(f"Running {func.__name__}")
         coro = func(*args, **kwargs)
         try:
-            # logger.debug(f"Running {coro.__name__}")
             return await coro
         except Exception as e:
             logger.error(f"In {Colors.cyan}{coro.__name__}{Colors.reset}: {e}")

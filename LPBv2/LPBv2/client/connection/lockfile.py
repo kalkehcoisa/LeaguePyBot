@@ -1,7 +1,10 @@
-import time
-from typing import Dict, Generator
 import asyncio
+import time
+from threading import Lock
+from typing import Generator
+
 from psutil import Process, process_iter, NoSuchProcess, ZombieProcess
+
 from ...logger import get_logger, Colors
 
 logger = get_logger("LPBv2.Lockfile")
@@ -9,18 +12,20 @@ logger = get_logger("LPBv2.Lockfile")
 
 class Lockfile:
     __instance = None
+    _lock: Lock = Lock()
 
-    @staticmethod
-    def get_instance():
-        if Lockfile.__instance is None:
-            Lockfile()
-        return Lockfile.__instance
+    def __call__(cls, *args, **kwargs):
+        """
+        Possible changes to the value of the `__init__` argument do not affect
+        the returned instance.
+        """
+        with cls._lock:
+            if cls.__instance is None:
+                instance = super().__call__(*args, **kwargs)
+                cls.__instance = instance
+        return cls.__instance
 
     def __init__(self):
-        if Lockfile.__instance is not None:
-            raise Exception("This class is a Singleton")
-        else:
-            Lockfile.__instance = self
         self.lcu_pid: int
         self.pid: int
         self.port: int
@@ -53,13 +58,13 @@ class Lockfile:
             except ZombieProcess:
                 continue
 
-    def parse_cmdline_args(self, cmdline_args) -> Dict[str, str]:
-        cmdline_args_parsed = {}
-        for cmdline_arg in cmdline_args:
-            if len(cmdline_arg) > 0 and "=" in cmdline_arg:
-                key, value = cmdline_arg[2:].split("=")
-                cmdline_args_parsed[key] = value
-        return cmdline_args_parsed
+    def parse_cmdline_args(self, cmdline_args) -> dict[str, str]:
+        cmds_parsed = {}
+        for cmd in cmdline_args:
+            if len(cmd) > 0 and cmd.startswith('--') and '=' in cmd:
+                key, value = cmd[2:].split('=', 1)
+                cmds_parsed[key] = value
+        return cmds_parsed
 
     def print_lockfile_info(self):
         logger.info(

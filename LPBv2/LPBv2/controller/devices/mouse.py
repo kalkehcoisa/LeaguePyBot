@@ -1,21 +1,25 @@
-from pynput.mouse import Button, Controller
 from time import sleep
+from threading import Lock
+
+from pynput.mouse import Button, Controller
 
 
 class Mouse:
     __instance = None
+    _lock: Lock = Lock()
 
-    @staticmethod
-    def get_instance(*args, **kwargs):
-        if Mouse.__instance is None:
-            Mouse(*args, **kwargs)
-        return Mouse.__instance
+    def __call__(cls, *args, **kwargs):
+        """
+        Possible changes to the value of the `__init__` argument do not affect
+        the returned instance.
+        """
+        with cls._lock:
+            if cls.__instance is None:
+                instance = super().__call__(*args, **kwargs)
+                cls.__instance = instance
+        return cls.__instance
 
     def __init__(self, sleep=0):
-        if Mouse.__instance is not None:
-            raise Exception("This class is a Singleton")
-        else:
-            Mouse.__instance = self
         self.mouse = Controller()
         self.sleep = sleep
 

@@ -1,22 +1,24 @@
 from time import sleep
+from threading import Lock
 import os
 
 
 class Keyboard:
     __instance = None
+    _lock: Lock = Lock()
 
-    @staticmethod
-    def get_instance(*args, **kwargs):
-        if Keyboard.__instance is None:
-            Keyboard(*args, **kwargs)
-        return Keyboard.__instance
+    def __call__(cls, *args, **kwargs):
+        """
+        Possible changes to the value of the `__init__` argument do not affect
+        the returned instance.
+        """
+        with cls._lock:
+            if cls.__instance is None:
+                instance = super().__call__(*args, **kwargs)
+                cls.__instance = instance
+        return cls.__instance
 
     def __init__(self, sleep=0):
-        if Keyboard.__instance is not None:
-            raise Exception("This class is a Singleton")
-        else:
-            Keyboard.__instance = self
-
         if os.name == "nt":
             from .keyboard_pydirectinput import KeyboardPyDirectInput
             self.keyboard = KeyboardPyDirectInput()
