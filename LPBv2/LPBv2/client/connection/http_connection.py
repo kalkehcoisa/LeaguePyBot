@@ -4,8 +4,8 @@ from aiohttp import ClientSession, BasicAuth
 
 from .connection import Connection
 from json import dumps
-from ...common import ClientResponse, debug_coro
-from ...logger import get_logger
+from ...common import ClientResponse
+from ...logger import get_logger, debug_coro
 
 logger = get_logger("LPBv2.HTTPConnection")
 
@@ -28,7 +28,7 @@ class HTTPConnection(Connection):
     def __init__(self):
         super().__init__()
 
-    @debug_coro
+    @debug_coro(logger)
     async def request(self, **kwargs):
         async with ClientSession(
             auth=BasicAuth("riot", self.lockfile.auth_key),

@@ -1,4 +1,4 @@
-from LPBv2.controller import Action, Keyboard, Mouse, Hotkeys
+from LPBv2.control import Action, Keyboard, Mouse, Hotkeys
 
 import pytest
 

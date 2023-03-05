@@ -1,14 +1,8 @@
-import pytest
-from LPBv2.game import GameConnector
-import aiohttp
 
-
-@pytest.fixture
-def get_connector():
-    return GameConnector()
 
 
 def test_game_connector_init(get_connector):
+    from LPBv2.game import GameConnector
     assert get_connector
     assert get_connector.base_url
     assert get_connector.headers

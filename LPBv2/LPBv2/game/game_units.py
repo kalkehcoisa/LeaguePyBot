@@ -1,12 +1,14 @@
-from ..common import Units, Match, debug_coro
+from ..common import Units, Match
 from typing import List
 
+from ..logger import get_logger, debug_coro
+logger = get_logger("LPBv2.Game")
 
 class GameUnits:
     def __init__(self):
         self.units = Units()
 
-    @debug_coro
+    @debug_coro(logger)
     async def update(self, matches: List[Match]):
         await self.clear_units()
         for match in matches:
@@ -31,14 +33,14 @@ class GameUnits:
                     self.units.enemy_buildings.append(match)
                     self.units.nb_enemy_buildings += 1
 
-    @debug_coro
+    @debug_coro(logger)
     async def clear_units(self):
         self.units = Units()
 
-    @debug_coro
+    @debug_coro(logger)
     async def is_minions_present(self):
         return self.units.nb_enemy_minions + self.units.nb_ally_minions > 0
 
-    @debug_coro
+    @debug_coro(logger)
     async def get_game_units(self):
         return self.units

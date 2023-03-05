@@ -1,10 +1,8 @@
 import aiohttp
-import json
 import ssl
 from threading import Lock
 
-from .utils import debug_coro
-from ..logger import get_logger
+from ..logger import get_logger, debug_coro
 
 logger = get_logger("LPBv2.Caller")
 
@@ -18,10 +16,6 @@ class Caller:
     }
 
     def __call__(cls, *args, **kwargs):
-        """
-        Possible changes to the value of the `__init__` argument do not affect
-        the returned instance.
-        """
         with cls._lock:
             if cls.__instance is None:
                 instance = super().__call__(*args, **kwargs)
@@ -29,30 +23,28 @@ class Caller:
         return cls.__instance
 
     def __init__(self):
-        self.context = ssl.create_default_context()
-        self.context.check_hostname = False
-        self.context.verify_mode = ssl.CERT_NONE
-        self.connector = aiohttp.TCPConnector(ssl=self.context)
+        super().__init__()
 
-    @debug_coro
+    @property
+    def connector(self):
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        return aiohttp.TCPConnector(ssl=context)
+
+    @debug_coro(logger)
     async def get(self, url):
-        try:
-            async with aiohttp.ClientSession(headers=self.headers, connector=self.connector) as session:
-                response = await session.get(url)
-                response_json = await response.json()
-                return response_json
-        except Exception as e:
-            logger.error(e)
+        async with aiohttp.ClientSession(headers=self.headers, connector=self.connector) as session:
+            response = await session.get(url)
+            response_json = await response.json()
+            return response_json
 
-    @debug_coro
+    @debug_coro(logger)
     async def post(self, url, payload):
-        try:
-            async with aiohttp.ClientSession(headers=self.headers, connector=self.connector) as session:
-                response = await session.post(
-                    url=url,
-                    json=payload,
-                )
-                response_json = await response.json()
-                return response_json
-        except Exception as e:
-            logger.error(e)
+        async with aiohttp.ClientSession(headers=self.headers, connector=self.connector) as session:
+            response = await session.post(
+                url=url,
+                json=payload,
+            )
+            response_json = await response.json()
+            return response_json

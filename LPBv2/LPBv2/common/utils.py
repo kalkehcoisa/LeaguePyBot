@@ -76,29 +76,18 @@ def find_closest_zone(x: int, y: int, zones=ZONES):
 
 
 def measure_time(func):
+    @functools.wraps(func)
     def time_it(*args, **kwargs):
         time_started = time.time()
         result = func(*args, **kwargs)
         time_elapsed = time.time()
         logger.debug(
-            f"{Colors.blue}{func.__name__}{Colors.reset} running time is {Colors.cyan}{round(time_elapsed - time_started, 4)}{Colors.reset} seconds."
+            f'{Colors.blue}{func.__name__}{Colors.reset} running time is '
+            f'{Colors.cyan}{round(time_elapsed - time_started, 4)}{Colors.reset} seconds.'
         )
         return result
 
     return time_it
-
-
-def debug_coro(func):
-    @functools.wraps(func)
-    async def add_exception(*args, **kwargs):
-        logger.debug(f"Running {func.__name__}")
-        coro = func(*args, **kwargs)
-        try:
-            return await coro
-        except Exception as e:
-            logger.error(f"In {Colors.cyan}{coro.__name__}{Colors.reset}: {e}")
-
-    return add_exception
 
 
 def remove_non_alphanumeric(client_value):

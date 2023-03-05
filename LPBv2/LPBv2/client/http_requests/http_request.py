@@ -1,5 +1,5 @@
 from ..connection.http_connection import HTTPConnection
-from ...common import debug_coro
+from ...logger import debug_coro
 
 
 class HTTPRequest:

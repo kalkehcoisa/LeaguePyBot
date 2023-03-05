@@ -1,10 +1,9 @@
 from typing import Optional
-import re
 import asyncio
-from ...common import remove_non_alphanumeric, debug_coro
+
+from ...common import remove_non_alphanumeric
 from .http_request import HTTPRequest
-from ...logger import get_logger, Colors
-from json import dumps
+from ...logger import get_logger, debug_coro
 
 logger = get_logger("LPBv2.Hotkeys")
 
@@ -36,7 +35,7 @@ class Hotkeys(HTTPRequest):
         loop.create_task(self.patch_hotkeys())
         loop.create_task(self.load_hotkeys())
 
-    @debug_coro
+    @debug_coro(logger)
     async def load_hotkey(self, category, key, hotkey, default):
         cleaned = remove_non_alphanumeric(hotkey)
         if cleaned.lower() == "unbound" or cleaned is None:
@@ -45,7 +44,7 @@ class Hotkeys(HTTPRequest):
             return default
         return cleaned
 
-    @debug_coro
+    @debug_coro(logger)
     async def load_hotkeys(self):
         response = await self.request(
             method="GET", endpoint="/lol-game-settings/v1/input-settings"
@@ -166,7 +165,7 @@ class Hotkeys(HTTPRequest):
         )
         logger.info(f"Loaded hotkeys")
 
-    @debug_coro
+    @debug_coro(logger)
     async def patch_hotkey(self, payload):
         return await self.request(
             method="PATCH",
@@ -174,7 +173,7 @@ class Hotkeys(HTTPRequest):
             payload=payload,
         )
 
-    @debug_coro
+    @debug_coro(logger)
     async def patch_hotkeys(self):
         hotkeys_settings = {
             "GameEvents": {

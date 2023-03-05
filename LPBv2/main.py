@@ -1,9 +1,11 @@
+#!python3.9.9
+
 import asyncio
+import logging
 import signal
 
 from LPBv2.bot import LeaguePyBot
 from LPBv2.console import Console
-from LPBv2.common import debug_coro, cls
 
 
 class GracefulExit(SystemExit):
@@ -18,8 +20,7 @@ signal.signal(signal.SIGINT, raise_graceful_exit)
 signal.signal(signal.SIGTERM, raise_graceful_exit)
 
 
-@debug_coro
-async def main():
+async def main(autostart: bool=True):
     try:
         bot = LeaguePyBot(autoplay=True)
         console = Console(bot)
@@ -38,6 +39,12 @@ async def main():
         # items config (will be automatic someday)
         await bot.build.set_starter_build(build=["1055", "2003", "3340"])
         await bot.build.set_item_build(build=["3074", "3006", "3508", "6692", "3072"])
+
+
+        # await bot.build.get_all_items()
+        # for item, value in bot.build.all_items.items():
+        #     print(item, value['name'])
+
 
         # Sample melee build
         # await bot.build.set_starter_build(build=["1055", "2003", "3340"])
@@ -85,9 +92,10 @@ async def main():
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
+    logging.basicConfig(level=logging.DEBUG)
 
     try:
-        loop.create_task(main())
+        loop.create_task(main(autostart=True))
         loop.run_forever()
     except GracefulExit:
         print("Leaving....")

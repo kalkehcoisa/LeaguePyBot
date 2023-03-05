@@ -1,10 +1,10 @@
 import pytest
-from LPBv2.game import GameFlow
 from LPBv2.common import GameEvent
 
 
 @pytest.fixture
-def get_game_flow():
+def game_flow():
+    from LPBv2.game import GameFlow
     return GameFlow()
 
 
@@ -36,41 +36,41 @@ game_data = {
 }
 
 
-def test_game_flow_init(get_game_flow):
-    assert get_game_flow
-    assert isinstance(get_game_flow.events, list)
-    assert isinstance(get_game_flow.time, float)
-    assert isinstance(get_game_flow.is_ingame, bool)
-    assert isinstance(get_game_flow.current_action, str)
-    assert isinstance(get_game_flow, GameFlow)
-    assert hasattr(get_game_flow, "update")
-    assert hasattr(get_game_flow, "update_is_ingame")
-    assert hasattr(get_game_flow, "update_events")
-    assert hasattr(get_game_flow, "update_current_action")
+def test_game_flow_init(game_flow):
+    assert game_flow
+    assert isinstance(game_flow.events, list)
+    assert isinstance(game_flow.time, float)
+    assert isinstance(game_flow.is_ingame, bool)
+    assert isinstance(game_flow.current_action, str)
+    assert isinstance(game_flow, GameFlow)
+    assert hasattr(game_flow, "update")
+    assert hasattr(game_flow, "update_is_ingame")
+    assert hasattr(game_flow, "update_events")
+    assert hasattr(game_flow, "update_current_action")
 
 
 @pytest.mark.asyncio
-async def test_update_is_ingame(get_game_flow):
-    await get_game_flow.update_is_ingame(True)
-    assert get_game_flow.is_ingame == True
+async def test_update_is_ingame(game_flow):
+    await game_flow.update_is_ingame(True)
+    assert game_flow.is_ingame == True
 
 
 @pytest.mark.asyncio
-async def test_update_events(get_game_flow):
-    await get_game_flow.update_events(events_data)
-    assert len(get_game_flow.events) == 4
-    assert isinstance(get_game_flow.events[0], GameEvent)
+async def test_update_events(game_flow):
+    await game_flow.update_events(events_data)
+    assert len(game_flow.events) == 4
+    assert isinstance(game_flow.events[0], GameEvent)
 
 
 @pytest.mark.asyncio
-async def test_update_time(get_game_flow):
-    await get_game_flow.update_time(game_data)
-    assert get_game_flow.time == 300.0
+async def test_update_time(game_flow):
+    await game_flow.update_time(game_data)
+    assert game_flow.time == 300.0
 
 
 @pytest.mark.asyncio
-async def test_game_flow_update(get_game_flow):
-    await get_game_flow.update(events_data=events_data, game_data=game_data)
-    assert len(get_game_flow.events) == 4
-    assert isinstance(get_game_flow.events[0], GameEvent)
-    assert get_game_flow.time == 300.0
+async def test_game_flow_update(game_flow):
+    await game_flow.update(events_data=events_data, game_data=game_data)
+    assert len(game_flow.events) == 4
+    assert isinstance(game_flow.events[0], GameEvent)
+    assert game_flow.time == 300.0

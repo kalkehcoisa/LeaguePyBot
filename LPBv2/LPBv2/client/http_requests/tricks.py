@@ -1,8 +1,7 @@
 from .http_request import HTTPRequest
 
 
-from ...common import debug_coro
-from ...logger import get_logger
+from ...logger import get_logger, debug_coro
 
 logger = get_logger("LPBv2.Tricks")
 
@@ -11,7 +10,7 @@ class Tricks(HTTPRequest):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @debug_coro
+    @debug_coro(logger)
     async def activate_skins(self):
         response = await self.request(
             method="POST",

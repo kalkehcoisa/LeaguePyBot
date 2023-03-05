@@ -1,5 +1,5 @@
 from aiohttp import ClientSession
-from ..common import debug_coro
+from ..logger import debug_coro
 
 
 class GameConnector:
