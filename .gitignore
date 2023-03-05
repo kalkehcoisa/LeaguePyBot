@@ -1,20 +1,19 @@
+# python
+*.py[oc]
+__pycache__/
+.pytest_cache/
+
+# project
+.vscode/
+*.bat
+logs/
+venv/
+
 opencv3
 superannotation
-account_league.py
 negative
 positive
 logs
 .DS_Store
 .coverage
-.vscode
-leaguepybotv2.0
 .hypothesis
-
-# python
-*.py[co]
-__pycache__
-.pytest_cache
-venv/
-
-# windows
-*.bat
